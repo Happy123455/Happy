@@ -1,6 +1,7 @@
 # Khodaldham → BS9 News → Wayonaa EV — motion graphic
 
 A 78-second, 1920×1080 / 30 fps motion graphic with its own synthesised soundtrack.
+Rendered result: [`output/Khodaldham_BS9_Wayonaa_Navratri_2026.mp4`](output/Khodaldham_BS9_Wayonaa_Navratri_2026.mp4).
 Everything — visuals, music and sound effects — is generated in code from the three
 brands' logos, so it can be re-timed or re-rendered at any resolution.
 
@@ -33,7 +34,7 @@ brands' logos, so it can be re-timed or re-rendered at any resolution.
 pip install numpy scipy pillow opencv-python-headless scikit-image numba imageio-ffmpeg
 python3 prep_assets.py          # cut logos out of their backgrounds -> assets/logos
 python3 audio.py                # -> build/soundtrack.wav
-python3 render.py video         # -> build/khodaldham_bs9_wayonaa.mp4 (uses all cores)
+python3 render.py video         # -> build/khodaldham_bs9_wayonaa.mp4 (master) + build/final.mp4 (share)
 python3 render.py still 8.7 20  # quick look at single frames
 MG_W=960 MG_H=540 python3 render.py video   # fast low-res preview
 ```

@@ -82,7 +82,15 @@ def video(t0=0.0, t1=T.TOTAL, out="khodaldham_bs9_wayonaa.mp4"):
                     "-movflags", "+faststart", final], check=True)
     for p in paths:
         os.remove(p)
-    print("wrote", final)
+    # shareable delivery encode (~85 MB): two-pass 8.5 Mbps
+    share = os.path.join(BUILD, "final.mp4")
+    rate = ["-c:v", "libx264", "-preset", "slow", "-b:v", "8500k", "-maxrate", "12M", "-bufsize", "17M", "-r", str(T.FPS)]
+    subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", silent, *rate, "-pass", "1", "-an", "-f", "mp4", os.devnull],
+                   check=True, cwd=BUILD)
+    subprocess.run([FFMPEG, "-y", "-loglevel", "error", "-i", silent, "-ss", str(t0), "-t", str(t1 - t0), "-i", wav,
+                    "-map", "0:v", "-map", "1:a", *rate, "-pass", "2", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "256k",
+                    "-movflags", "+faststart", "-shortest", share], check=True, cwd=BUILD)
+    print("wrote", final, "and", share)
 
 
 if __name__ == "__main__":

@@ -909,7 +909,7 @@ def scene_navratri(t, fr):
             # big day numeral
             num = text_rgba(str(k + 1), "Anton-Regular.ttf", 700, None, 0, tuple(ink))
             img = place(img, num, CX + 730 * S, CY, 1.0 + 0.05 * (t - tb), 0.16)
-            ver = [1, 2, 3][k % 3]
+            ver = [1, 2][k % 2]
             sc = 1.0 + 0.08 * np.exp(-(t - tb) / 0.12)
             rgb, a = logo_layer(ver, CX, CY, sc * (0.85 if ver != 3 else 0.8))
             if bright_bg:
