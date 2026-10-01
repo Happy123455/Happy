@@ -1,6 +1,6 @@
 # College Campus 3D Model
 
-Made a full 3D model of my college campus in Blender using **Claude Opus 5.5**.
+Made a full 3D model of my college campus (Darshan University) in Blender using **Claude Opus 5.5**.
 
 Basically fed it Google Maps satellite imagery + street view photos and had it build out the entire layout procedurally with Python. Placed the academic blocks, roads, trees, and buses surprisingly accurately.
 
