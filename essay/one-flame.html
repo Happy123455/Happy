@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Flame — A Kinetic Essay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&family=Anek+Gujarati:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --ink: #f4f4f0;
+    --mute: rgba(244, 244, 240, .42);
+    --faint: rgba(244, 244, 240, .12);
+    --accent: #ff3300;
+    --display: "Syne", "Arial Black", sans-serif;
+    --serif: "Instrument Serif", Georgia, serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+    --guj: "Anek Gujarati", "Noto Sans Gujarati", sans-serif;
+    --pad: clamp(20px, 5.5vw, 96px);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); }
+  body { font-family: var(--display); -webkit-font-smoothing: antialiased; cursor: default; }
+
+  #stage { position: fixed; inset: 0; perspective: 1200px; }
+  canvas.layer { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+  #fx { z-index: 1; }
+  #spark { z-index: 4; mix-blend-mode: screen; }
+  #grain { z-index: 6; opacity: .085; mix-blend-mode: overlay; image-rendering: pixelated; }
+
+  /* ---------- frame furniture ---------- */
+  .chrome { position: fixed; z-index: 5; font: 400 10px/1 var(--mono); letter-spacing: .28em; text-transform: uppercase; color: var(--mute); }
+  .chrome.tl { top: 28px; left: var(--pad); }
+  .chrome.tr { top: 28px; right: var(--pad); text-align: right; }
+  .chrome.bl { bottom: 78px; left: var(--pad); }
+  .chrome.br { bottom: 78px; right: var(--pad); text-align: right; }
+  .corner { position: fixed; z-index: 5; width: 18px; height: 18px; border-color: var(--faint); border-style: solid; border-width: 0; }
+  .corner.c1 { top: 14px; left: 14px; border-top-width: 1px; border-left-width: 1px; }
+  .corner.c2 { top: 14px; right: 14px; border-top-width: 1px; border-right-width: 1px; }
+  .corner.c3 { bottom: 64px; left: 14px; border-bottom-width: 1px; border-left-width: 1px; }
+  .corner.c4 { bottom: 64px; right: 14px; border-bottom-width: 1px; border-right-width: 1px; }
+  .live-dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: 1px; }
+
+  /* ---------- scenes & lines ---------- */
+  .scene { position: absolute; inset: 0; padding: 12vh var(--pad) 18vh; display: flex; flex-direction: column; justify-content: center; z-index: 3; pointer-events: none; }
+  .line { display: block; white-space: nowrap; transform-origin: 0% 100%; will-change: transform, letter-spacing; }
+  .line.c { align-self: center; text-align: center; transform-origin: 50% 100%; }
+  .line.r { align-self: flex-end; text-align: right; transform-origin: 100% 100%; }
+
+  .mega  { font: 800 clamp(3rem, 8vw, 10rem)/.86 var(--display); letter-spacing: -.02em; text-transform: uppercase; }
+  .big   { font: 800 clamp(2.4rem, 6.4vw, 8.2rem)/.9 var(--display); letter-spacing: -.02em; text-transform: uppercase; }
+  .serif { font: italic 400 clamp(2rem, 5.2vw, 6rem)/1 var(--serif); letter-spacing: 0; }
+  .serif.sm { font-size: clamp(1.4rem, 3vw, 3.4rem); }
+  .guj   { font: 700 clamp(1.5rem, 3.4vw, 3.8rem)/1.25 var(--guj); }
+  .micro { font: 400 10px/1.6 var(--mono); letter-spacing: .32em; text-transform: uppercase; color: var(--mute); }
+  .accent { color: var(--accent); }
+  .mute { color: var(--mute); }
+  .gap-s { margin-top: 1.2vh; } .gap-m { margin-top: 3.4vh; } .gap-l { margin-top: 6vh; }
+
+  /* split masks: words clip their characters for the vertical reveal */
+  .w { display: inline-block; overflow: hidden; vertical-align: top; padding: .08em .02em .14em; margin: -.08em -.02em -.14em; }
+  .ch { display: inline-block; will-change: transform, filter, opacity; }
+  .sp { display: inline-block; width: .26em; }
+
+  /* ---------- controller ---------- */
+  #bar { position: fixed; left: 0; right: 0; bottom: 0; height: 52px; z-index: 7; display: flex; align-items: center; gap: 18px; padding: 0 var(--pad);
+         background: linear-gradient(to top, rgba(13,13,13,.92), rgba(13,13,13,0)); font: 400 10px/1 var(--mono); letter-spacing: .2em; color: var(--mute); }
+  #play { width: 28px; height: 28px; flex: none; border: 1px solid var(--faint); border-radius: 50%; background: none; color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  #play:hover, #play:focus-visible { border-color: var(--accent); outline: none; }
+  #play svg { width: 9px; height: 9px; fill: currentColor; }
+  #track { position: relative; flex: 1; height: 28px; cursor: pointer; touch-action: none; }
+  #track .rail { position: absolute; left: 0; right: 0; top: 13px; height: 1px; background: var(--faint); }
+  #track .fill { position: absolute; left: 0; top: 13px; height: 1px; background: var(--accent); width: 0; }
+  #track .head { position: absolute; top: 9px; width: 9px; height: 9px; margin-left: -4px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  #track .tick { position: absolute; top: 9px; width: 1px; height: 9px; background: var(--mute); }
+  #track .tick span { position: absolute; top: -12px; left: 4px; white-space: nowrap; font-size: 8px; letter-spacing: .24em; color: var(--mute); }
+  #tc { width: 15ch; text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) { #track .tick span { display: none; } .chrome.tr, .chrome.br { display: none; } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="fx" class="layer"></canvas>
+
+  <!-- 01 ONE FLAME -->
+  <section class="scene" data-scene="0">
+    <div class="line micro" data-in="0.25" data-out="4.35" data-fx="rise">Navratri 2026 — Act 01 — Shree Khodaldham</div>
+    <div class="line serif gap-m" data-in="0.55" data-out="4.3" data-fx="blur">Every year,</div>
+    <div class="line mega gap-s" data-in="1.05" data-out="4.4" data-fx="tilt">One</div>
+    <div class="line mega" data-in="1.35" data-out="4.45" data-fx="track"><span class="accent">Flame</span></div>
+    <div class="line guj gap-m mute" data-in="2.35" data-out="4.25" data-fx="rise" data-split="word">એક <span class="accent">જ્યોત</span></div>
+    <div class="line micro gap-l" data-in="2.9" data-out="4.2" data-fx="rise">Fig. 01 — Diya / દીવો — r = 170 — burning since 2017</div>
+  </section>
+
+  <!-- 02 LAKHS OF HEARTS -->
+  <section class="scene" data-scene="1">
+    <div class="line micro" data-in="5.1" data-out="9.4" data-fx="rise">Kagvad, Rajkot — 159 ft — Maru-Gurjara</div>
+    <div class="line mega gap-m" data-in="5.3" data-out="9.45" data-fx="tilt">Lakhs</div>
+    <div class="line mega" data-in="5.55" data-out="9.5" data-fx="tilt">of <span class="accent">hearts</span></div>
+    <div class="line serif gap-m" data-in="6.6" data-out="9.35" data-fx="blur">one rhythm, one circle.</div>
+    <div class="line guj gap-s" data-in="7.3" data-out="9.3" data-fx="rise" data-split="word">ગરબે <span class="accent">ઘૂમે</span> ગુજરાત</div>
+  </section>
+
+  <!-- 03 A CITY IS SPEAKING -->
+  <section class="scene" data-scene="2">
+    <div class="line micro" data-in="10.1" data-out="14.4" data-fx="rise"><span class="live-dot"></span>Live — Act 02 — BS9 News</div>
+    <div class="line serif gap-m" data-in="10.3" data-out="14.35" data-fx="blur">Somewhere,</div>
+    <div class="line big gap-s" data-in="10.75" data-out="14.45" data-fx="track">a city</div>
+    <div class="line big" data-in="11.1" data-out="14.5" data-fx="tilt">is <span class="accent">speaking</span></div>
+    <div class="line micro gap-l" data-in="12.2" data-out="14.3" data-fx="rise">Rajkot — 22.3039° N · 70.8022° E</div>
+    <div class="line micro" data-in="12.45" data-out="14.3" data-fx="rise">Local · Traffic · Weather · Community · 24×7</div>
+  </section>
+
+  <!-- 04 MOVES FORWARD -> ONE HEARTBEAT -->
+  <section class="scene" data-scene="3">
+    <div class="line micro" data-in="15.1" data-out="17.35" data-fx="rise">Act 03 — Wayonaa EV — G-Razor / G-One / G-Lite</div>
+    <div class="line serif gap-m" data-in="15.3" data-out="17.3" data-fx="blur">and the city</div>
+    <div class="line mega gap-s" data-in="15.65" data-out="17.4" data-fx="track">moves</div>
+    <div class="line mega" data-in="15.95" data-out="17.45" data-fx="tilt"><span class="accent">forward</span></div>
+    <div class="line micro gap-m" data-in="16.5" data-out="17.3" data-fx="rise">Range 80 km — zero emission — the smart way to move</div>
+  </section>
+  <section class="scene" data-scene="4" style="align-items:center; text-align:center">
+    <div class="line serif sm c" data-in="17.75" data-out="19.45" data-fx="blur">one flame.</div>
+    <div class="line serif sm c" data-in="18.1" data-out="19.5" data-fx="blur">one city.</div>
+    <div class="line big c gap-s" style="font-size:clamp(2.2rem,5.6vw,7.6rem)" data-in="18.45" data-out="19.55" data-fx="pop"><span class="accent">one heartbeat.</span></div>
+    <div class="line micro c gap-l" data-in="18.8" data-out="19.5" data-fx="rise">Shree Khodaldham × BS9 News × Wayonaa EV — Navratri 2026</div>
+  </section>
+
+  <canvas id="spark" class="layer"></canvas>
+  <canvas id="grain" class="layer"></canvas>
+</div>
+
+<div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
+<div class="chrome tl" id="act">01 — One Flame</div>
+<div class="chrome tr" id="clock">00:00:00</div>
+<div class="chrome bl">A kinetic essay</div>
+<div class="chrome br">22.30°N 70.80°E</div>
+
+<div id="bar">
+  <button id="play" aria-label="Pause"><svg viewBox="0 0 10 10" id="icon"></svg></button>
+  <div id="track" role="slider" aria-label="Timeline" aria-valuemin="0" aria-valuemax="20" tabindex="0">
+    <div class="rail"></div><div class="fill"></div><div class="head"></div>
+  </div>
+  <div id="tc">00:00.00 / 00:20.00</div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const DUR = 20;                       // seconds per loop
+  const STAGGER = 0.03;                 // 30 ms between characters
+  const IN_DUR = 1.05, OUT_DUR = 0.55;
+  const ACTS = [[0, "01 — One Flame"], [5, "01 — Lakhs of Hearts"], [10, "02 — A City Is Speaking"], [15, "03 — Moves Forward"], [17.6, "04 — Together"]];
+  const MARKS = [[0, "One flame"], [5, "Hearts"], [10, "City"], [15, "Forward"], [17.6, "Heartbeat"]];
+
+  // ------------------------------------------------------------------ easing
+  // cubic-bezier(0.16, 1, 0.3, 1) solved numerically (the "expo-out" feel)
+  function bezier(x1, y1, x2, y2) {
+    const A = (a, b) => 1 - 3 * b + 3 * a, B = (a, b) => 3 * b - 6 * a, C = a => 3 * a;
+    const calc = (t, a, b) => ((A(a, b) * t + B(a, b)) * t + C(a)) * t;
+    const slope = (t, a, b) => 3 * A(a, b) * t * t + 2 * B(a, b) * t + C(a);
+    return x => {
+      if (x <= 0) return 0; if (x >= 1) return 1;
+      let t = x;
+      for (let i = 0; i < 8; i++) { const s = slope(t, x1, x2); if (Math.abs(s) < 1e-6) break; t -= (calc(t, x1, x2) - x) / s; }
+      return calc(Math.min(1, Math.max(0, t)), y1, y2);
+    };
+  }
+  const expoOut = bezier(0.16, 1, 0.3, 1);
+  const power4Out = x => 1 - Math.pow(1 - clamp(x), 4);
+  const power3In = x => Math.pow(clamp(x), 3);
+  const backOut = x => { x = clamp(x) - 1; const s = 1.9; return x * x * ((s + 1) * x + s) + 1; };
+  function clamp(x, a = 0, b = 1) { return x < a ? a : x > b ? b : x; }
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const prog = (t, a, d) => clamp((t - a) / d);
+
+  // ------------------------------------------------------------------ split typography
+  const lines = [];
+  document.querySelectorAll(".line").forEach(line => {
+    const mode = line.dataset.split || "char";
+    const chars = [];
+    const build = (node, out) => {
+      node.childNodes.forEach(n => {
+        if (n.nodeType === 3) {
+          const parts = n.textContent.split(/(\s+)/);
+          parts.forEach(p => {
+            if (!p) return;
+            if (/^\s+$/.test(p)) { const s = document.createElement("span"); s.className = "sp"; out.appendChild(s); return; }
+            const w = document.createElement("span"); w.className = "w";
+            const pieces = mode === "word" ? [p] : Array.from(p);
+            pieces.forEach(c => { const ch = document.createElement("span"); ch.className = "ch"; ch.textContent = c; w.appendChild(ch); chars.push(ch); });
+            out.appendChild(w);
+          });
+        } else if (n.nodeType === 1) {
+          const clone = n.cloneNode(false); out.appendChild(clone);
+          if (n.classList.contains("live-dot")) return;
+          build(n, clone);
+        }
+      });
+    };
+    const frag = document.createElement("span");
+    build(line, frag);
+    line.textContent = "";
+    while (frag.firstChild) line.appendChild(frag.firstChild);
+    lines.push({ el: line, chars, tin: +line.dataset.in, tout: +line.dataset.out, fx: line.dataset.fx || "rise", vis: null });
+  });
+
+  function renderLines(t) {
+    for (const L of lines) {
+      const n = L.chars.length;
+      const end = L.tout + OUT_DUR + n * STAGGER * 0.5;
+      const visible = t >= L.tin - 0.05 && t <= end + 0.05;
+      if (visible !== L.vis) { L.el.style.visibility = visible ? "visible" : "hidden"; L.vis = visible; }
+      if (!visible) continue;
+      // line-level motion
+      const kl = expoOut(prog(t, L.tin, IN_DUR + n * STAGGER));
+      const ko = power3In(prog(t, L.tout, OUT_DUR + n * STAGGER * 0.5));
+      let tr = "", ls = "";
+      if (L.fx === "track") { ls = lerp(0.5, -0.02, expoOut(prog(t, L.tin, 1.6))).toFixed(4) + "em"; tr = `translateX(${(-ko * 4).toFixed(2)}vw)`; }
+      else if (L.fx === "tilt") tr = `rotateX(${(lerp(55, 0, kl) - ko * 25).toFixed(2)}deg) translateZ(0)`;
+      else if (L.fx === "pop") tr = `scale(${(lerp(0.82, 1, backOut(prog(t, L.tin, 0.9))) + ko * 0.06).toFixed(4)})`;
+      else if (L.fx === "blur") tr = `translateX(${(lerp(2.5, 0, kl) - ko * 2).toFixed(2)}vw)`;
+      L.el.style.transform = tr;
+      if (ls) L.el.style.letterSpacing = ls;
+      // per-character vertical mask reveal + blur dissipation
+      for (let i = 0; i < n; i++) {
+        const ki = expoOut(prog(t, L.tin + i * STAGGER, IN_DUR));
+        const kx = power3In(prog(t, L.tout + i * STAGGER * 0.5, OUT_DUR));
+        const y = (1 - ki) * 112 - kx * 112;
+        const blur = (1 - ki) * 12 + kx * 9;
+        const ch = L.chars[i].style;
+        ch.transform = `translate3d(0,${y.toFixed(2)}%,0) rotate(${((1 - ki) * 6).toFixed(2)}deg)`;
+        ch.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+        ch.opacity = (Math.min(1, ki * 1.6) * (1 - kx)).toFixed(3);
+      }
+    }
+  }
+
+  // ------------------------------------------------------------------ canvases
+  const fx = document.getElementById("fx"), fxc = fx.getContext("2d");
+  const sp = document.getElementById("spark"), spc = sp.getContext("2d");
+  const gr = document.getElementById("grain"), grc = gr.getContext("2d");
+  let W = 0, H = 0, DPR = 1;
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    for (const c of [fx, sp]) { c.width = Math.round(W * DPR); c.height = Math.round(H * DPR); }
+    fxc.setTransform(DPR, 0, 0, DPR, 0, 0); spc.setTransform(DPR, 0, 0, DPR, 0, 0);
+    gr.width = Math.ceil(W / 2); gr.height = Math.ceil(H / 2);
+    makeGrain();
+  }
+  let grainFrames = [];
+  function makeGrain() {
+    grainFrames = [];
+    for (let f = 0; f < 6; f++) {
+      const img = grc.createImageData(gr.width, gr.height), d = img.data;
+      for (let i = 0; i < d.length; i += 4) { const v = Math.random() * 255 | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+      grainFrames.push(img);
+    }
+  }
+  window.addEventListener("resize", () => { resize(); draw(time, true); });
+
+  // the hero spark: one point of light that never leaves the film
+  const SPARK_KEYS = [  // t, x, y (fractions of viewport), size
+    [0.0, .80, .50, .0], [0.5, .80, .50, 1.0], [4.6, .80, .47, 1.15],
+    [5.4, .80, .50, 1.3], [9.5, .80, .50, 1.3],
+    [10.4, .80, .50, 1.1], [14.5, .80, .50, 1.4],
+    [15.2, .12, .80, 1.0], [17.2, .90, .80, 1.25],
+    [17.9, .50, .27, 1.2], [19.4, .50, .27, 1.5], [19.95, .50, .27, 0.0]];
+  function sparkAt(t) {
+    for (let i = 0; i < SPARK_KEYS.length - 1; i++) {
+      const a = SPARK_KEYS[i], b = SPARK_KEYS[i + 1];
+      if (t <= b[0]) {
+        const k = (t - a[0]) / Math.max(b[0] - a[0], 1e-6);
+        const e = i === 7 ? k : expoOut(k);       // the ride (15.2 -> 17.2) is a constant-speed headlight
+        return [lerp(a[1], b[1], e) * W, lerp(a[2], b[2], e) * H, lerp(a[3], b[3], e)];
+      }
+    }
+    const z = SPARK_KEYS[SPARK_KEYS.length - 1];
+    return [z[1] * W, z[2] * H, z[3]];
+  }
+
+  function drawSpark(t) {
+    spc.clearRect(0, 0, W, H);
+    const flick = 1 + 0.08 * Math.sin(t * 31) + 0.05 * Math.sin(t * 57 + 1.3);
+    // short trail
+    spc.lineCap = "round";
+    let [px, py] = sparkAt(Math.max(0, t - 0.0));
+    for (let k = 1; k <= 8; k++) {
+      const [qx, qy, s] = sparkAt(Math.max(0, t - k / 70));
+      spc.strokeStyle = `rgba(255,120,60,${0.5 * (1 - k / 9)})`;
+      spc.lineWidth = 2.2 * (1 - k / 9) * Math.max(s, .2);
+      spc.beginPath(); spc.moveTo(px, py); spc.lineTo(qx, qy); spc.stroke();
+      px = qx; py = qy;
+    }
+    const [x, y, s] = sparkAt(t);
+    if (s <= 0.01) return;
+    const r = Math.max(2, Math.min(W, H) * 0.0045) * s * flick;
+    let g = spc.createRadialGradient(x, y, 0, x, y, r * 26);
+    g.addColorStop(0, "rgba(255,90,40,.32)"); g.addColorStop(.35, "rgba(255,51,0,.08)"); g.addColorStop(1, "rgba(255,51,0,0)");
+    spc.fillStyle = g; spc.beginPath(); spc.arc(x, y, r * 26, 0, Math.PI * 2); spc.fill();
+    g = spc.createRadialGradient(x, y, 0, x, y, r * 4);
+    g.addColorStop(0, "rgba(255,236,210,1)"); g.addColorStop(.25, "rgba(255,170,110,.9)"); g.addColorStop(1, "rgba(255,51,0,0)");
+    spc.fillStyle = g; spc.beginPath(); spc.arc(x, y, r * 4, 0, Math.PI * 2); spc.fill();
+    spc.fillStyle = "#fff"; spc.beginPath(); spc.arc(x, y, r * .7, 0, Math.PI * 2); spc.fill();
+  }
+
+  // scene graphics around the spark (all hairlines, one accent)
+  function drawFx(t) {
+    fxc.clearRect(0, 0, W, H);
+    const [x, y] = sparkAt(t);
+    const m = Math.min(W, H);
+    fxc.lineWidth = 1;
+
+    // 01 — hairline + construction circles
+    const a1 = prog(t, 0.1, 0.9) * (1 - prog(t, 4.3, 0.6));
+    if (a1 > 0) {
+      const L = expoOut(prog(t, 0.2, 1.4)) * W * 0.32;
+      fxc.strokeStyle = `rgba(244,244,240,${0.22 * a1})`;
+      fxc.beginPath(); fxc.moveTo(x - L, y + m * .09); fxc.lineTo(x + L, y + m * .09); fxc.stroke();
+      fxc.setLineDash([3, 7]);
+      for (const [rr, d] of [[.16, 0.6], [.26, 0.9]]) {
+        const k = expoOut(prog(t, d, 1.6));
+        fxc.beginPath(); fxc.arc(x, y, m * rr, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * k); fxc.stroke();
+      }
+      fxc.setLineDash([]);
+      // diya bowl
+      const kb = expoOut(prog(t, 1.2, 1.8));
+      fxc.strokeStyle = `rgba(244,244,240,${0.85 * a1})`; fxc.lineWidth = 1.5;
+      fxc.beginPath(); fxc.ellipse(x - m * .02, y + m * .07, m * .12, m * .055, 0, 0, Math.PI * kb); fxc.stroke();
+      fxc.beginPath(); fxc.ellipse(x - m * .02, y + m * .07, m * .12, m * .016, 0, Math.PI, Math.PI + Math.PI * 2 * kb); fxc.stroke();
+      fxc.lineWidth = 1;
+    }
+
+    // 02 — garba rings of dancers in perspective
+    const a2 = prog(t, 5.0, 0.8) * (1 - prog(t, 9.3, 0.7));
+    if (a2 > 0) {
+      const grow = expoOut(prog(t, 5.0, 1.6));
+      const tilt = 0.32;
+      const rings = [[.07, 12, 1], [.12, 18, -1], [.17, 26, 1], [.22, 34, -1]];
+      rings.forEach(([rr, n, dir], ri) => {
+        const R = m * rr * grow;
+        fxc.strokeStyle = `rgba(244,244,240,${0.16 * a2})`;
+        fxc.beginPath(); fxc.ellipse(x, y, R, R * tilt, 0, 0, Math.PI * 2); fxc.stroke();
+        for (let j = 0; j < n; j++) {
+          const an = j / n * Math.PI * 2 + dir * (t - 5) * (0.9 - ri * .12);
+          const hop = Math.abs(Math.sin(an * 3 + t * 6)) * m * .008;
+          const dx = Math.cos(an) * R, dy = Math.sin(an) * R * tilt - hop;
+          const near = (Math.sin(an) + 1) / 2;
+          fxc.fillStyle = ri === 1 ? `rgba(255,51,0,${a2 * (.45 + .55 * near)})` : `rgba(244,244,240,${a2 * (.3 + .6 * near)})`;
+          fxc.beginPath(); fxc.arc(x + dx, y + dy, 1.4 + near * 1.8, 0, Math.PI * 2); fxc.fill();
+        }
+      });
+    }
+
+    // 03 — broadcast rings + crosshair
+    const a3 = prog(t, 10.0, 0.6) * (1 - prog(t, 14.4, 0.6));
+    if (a3 > 0) {
+      for (let i = 0; i < 6; i++) {
+        const ph = ((t - 10) * 0.42 + i / 6) % 1;
+        const R = m * (.03 + ph * .36);
+        fxc.strokeStyle = i % 3 === 0 ? `rgba(255,51,0,${a3 * (1 - ph) * .9})` : `rgba(244,244,240,${a3 * (1 - ph) * .45})`;
+        fxc.beginPath(); fxc.ellipse(x, y, R, R * .42, 0, 0, Math.PI * 2); fxc.stroke();
+      }
+      const s = m * lerp(.14, .045, expoOut(prog(t, 11.6, 1.0)));
+      fxc.strokeStyle = `rgba(244,244,240,${a3 * .8})`; fxc.lineWidth = 1.3;
+      for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+        const cx = x + sx * s, cy = y + sy * s;
+        fxc.beginPath(); fxc.moveTo(cx - sx * s * .45, cy); fxc.lineTo(cx, cy); fxc.lineTo(cx, cy - sy * s * .45); fxc.stroke();
+      }
+      fxc.lineWidth = 1;
+    }
+
+    // 04 — the road: speed lines streaming past the headlight
+    const a4 = prog(t, 15.0, 0.5) * (1 - prog(t, 17.2, 0.5));
+    if (a4 > 0) {
+      const gy = H * .80 + m * .03;
+      fxc.strokeStyle = `rgba(244,244,240,${a4 * .35})`;
+      fxc.beginPath(); fxc.moveTo(0, gy); fxc.lineTo(W, gy); fxc.stroke();
+      for (let i = 0; i < 24; i++) {
+        const yy = H * (.18 + ((i * 0.6180339) % 1) * .6);
+        const len = W * (.05 + ((i * .37) % 1) * .18);
+        const xx = W - (((t - 15) * W * (0.9 + (i % 5) * .25) + i * 173) % (W + len));
+        fxc.strokeStyle = i % 6 === 0 ? `rgba(255,51,0,${a4 * .5})` : `rgba(244,244,240,${a4 * .12})`;
+        fxc.beginPath(); fxc.moveTo(xx, yy); fxc.lineTo(xx + len, yy); fxc.stroke();
+      }
+      // headlight beam
+      const g = fxc.createLinearGradient(x, 0, x + W * .45, 0);
+      g.addColorStop(0, `rgba(255,220,190,${a4 * .16})`); g.addColorStop(1, "rgba(255,220,190,0)");
+      fxc.fillStyle = g;
+      fxc.beginPath(); fxc.moveTo(x, y); fxc.lineTo(x + W * .45, y - m * .1); fxc.lineTo(x + W * .45, y + m * .14); fxc.closePath(); fxc.fill();
+    }
+
+    // 05 — three threads meet in the flame
+    const a5 = prog(t, 17.8, 0.6) * (1 - prog(t, 19.4, 0.5));
+    if (a5 > 0) {
+      const k = expoOut(prog(t, 17.8, 1.4));
+      fxc.strokeStyle = `rgba(244,244,240,${a5 * .3})`;
+      for (const ang of [-2.6, -0.55, 1.57]) {
+        const L = m * .32 * k;
+        fxc.beginPath(); fxc.moveTo(x, y); fxc.lineTo(x + Math.cos(ang) * L, y + Math.sin(ang) * L * .6); fxc.stroke();
+      }
+    }
+  }
+
+  let grainIdx = 0, lastGrain = 0;
+  function drawGrain(now) {
+    if (now - lastGrain < 45 || !grainFrames.length) return;   // ~22 fps film grain
+    lastGrain = now; grainIdx = (grainIdx + 1) % grainFrames.length;
+    grc.putImageData(grainFrames[grainIdx], 0, 0);
+  }
+
+  // ------------------------------------------------------------------ chrome + controller
+  const actEl = document.getElementById("act"), clockEl = document.getElementById("clock");
+  const track = document.getElementById("track"), fill = track.querySelector(".fill"), head = track.querySelector(".head");
+  const tc = document.getElementById("tc"), playBtn = document.getElementById("play"), icon = document.getElementById("icon");
+  MARKS.forEach(([t, label]) => {
+    const tk = document.createElement("div"); tk.className = "tick"; tk.style.left = (t / DUR * 100) + "%";
+    const sp_ = document.createElement("span"); sp_.textContent = label; tk.appendChild(sp_); track.appendChild(tk);
+  });
+  const fmt = t => { const s = Math.floor(t), cs = Math.floor((t - s) * 100); return `00:${String(s).padStart(2, "0")}.${String(cs).padStart(2, "0")}`; };
+  function setIcon() {
+    icon.innerHTML = playing ? '<rect x="1" y="0" width="3" height="10"/><rect x="6" y="0" width="3" height="10"/>' : '<path d="M1 0 L10 5 L1 10 Z"/>';
+    playBtn.setAttribute("aria-label", playing ? "Pause" : "Play");
+  }
+  function renderChrome(t) {
+    const p = t / DUR * 100;
+    fill.style.width = p + "%"; head.style.left = p + "%";
+    tc.textContent = `${fmt(t)} / 00:20.00`;
+    track.setAttribute("aria-valuenow", t.toFixed(2));
+    let act = ACTS[0][1]; for (const [at, label] of ACTS) if (t >= at) act = label;
+    if (actEl.textContent !== act) actEl.textContent = act;
+    const fr = Math.floor((t % 1) * 30);
+    clockEl.textContent = `00:${String(Math.floor(t)).padStart(2, "0")}:${String(fr).padStart(2, "0")}  ·  ${DUR}s loop`;
+  }
+
+  // ------------------------------------------------------------------ clock
+  let time = 0, playing = true, last = performance.now(), scrubbing = false;
+  function draw(t, force) {
+    renderLines(t);
+    drawFx(t);
+    drawSpark(t);
+    renderChrome(t);
+  }
+  function frame(now) {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    if (playing && !scrubbing) time = (time + dt) % DUR;
+    draw(time);
+    drawGrain(now);
+    requestAnimationFrame(frame);
+  }
+
+  function seekFromEvent(e) {
+    const r = track.getBoundingClientRect();
+    time = clamp((e.clientX - r.left) / r.width) * (DUR - 0.001);
+    draw(time);
+  }
+  track.addEventListener("pointerdown", e => { scrubbing = true; track.setPointerCapture(e.pointerId); seekFromEvent(e); });
+  track.addEventListener("pointermove", e => { if (scrubbing) seekFromEvent(e); });
+  const endScrub = () => { scrubbing = false; last = performance.now(); };
+  track.addEventListener("pointerup", endScrub); track.addEventListener("pointercancel", endScrub);
+  playBtn.addEventListener("click", () => { playing = !playing; last = performance.now(); setIcon(); });
+  window.addEventListener("keydown", e => {
+    if (e.code === "Space") { e.preventDefault(); playing = !playing; last = performance.now(); setIcon(); }
+    else if (e.code === "ArrowRight") { time = (time + 1) % DUR; draw(time); }
+    else if (e.code === "ArrowLeft") { time = (time - 1 + DUR) % DUR; draw(time); }
+  });
+
+  // deterministic seek hook (handy for recording / testing): window.__seek(7.5)
+  window.__seek = t => { playing = false; setIcon(); time = clamp(t, 0, DUR - 0.001); draw(time); };
+
+  resize();
+  setIcon();
+  const start = () => { last = performance.now(); requestAnimationFrame(frame); };
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(start);
+})();
+</script>
+</body>
+</html>
