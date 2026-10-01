@@ -27,3 +27,4 @@ The campus was procedurally built in Blender 5.2 with Claude Opus 5.5 by combini
 - **`campus_model.blend`**: Complete Blender 3D model with packed textures, academic blocks, hostel towers, roads, vegetation, and buses.
 - **`Screen Recording 2026-10-01 at 14.00.43.mp4`**: Full 2.5K screen recording walkthrough of the 3D scene in Blender.
 - **`preview.gif`**: Animated camera fly-in preview showing the top-down to 3D perspective transition.
+- **`Marble Bedroom Suite.html`**: Interactive Three.js 3D web app featuring a marble bedroom suite with OrbitControls, custom lighting controls, walk-to presets, and materials.
