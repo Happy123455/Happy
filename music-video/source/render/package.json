@@ -1,0 +1,12 @@
+{
+  "name": "low-shear-high-capacity-video",
+  "private": true,
+  "description": "Frame-by-frame renderer for the Low Shear, High Capacity music video",
+  "scripts": {
+    "still": "node main.js still",
+    "render": "node main.js render"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.10"
+  }
+}
