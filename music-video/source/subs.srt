@@ -1,0 +1,248 @@
+1
+00:00:00,000 --> 00:00:08,936
+**(Pre-Chorus - The Roast)**
+
+2
+00:00:08,936 --> 00:00:14,043
+Alright fifth-semester, phones away, eyes on the board!
+
+3
+00:00:14,043 --> 00:00:19,388
+Half of you failed the midterm because you do not know the difference between a pin and a roller.
+
+4
+00:00:19,388 --> 00:00:23,697
+Today we are doing a lateral stability check on a steel beam.
+
+5
+00:00:23,697 --> 00:00:29,282
+If you mess this up in the real world, the roof caves in.
+
+6
+00:00:29,282 --> 00:00:39,282
+So pay attention. Hit the track!
+
+7
+00:00:41,250 --> 00:00:43,723
+Check the problem on the screen, read it and weep,
+
+8
+00:00:43,723 --> 00:00:45,957
+I S M B three hundred, do not go to sleep!
+
+9
+00:00:45,957 --> 00:00:49,229
+It is a simply supported beam with a span of five meters,
+
+10
+00:00:49,229 --> 00:00:51,862
+Dealing with a factored load, pay attention you cheaters!
+
+11
+00:00:51,862 --> 00:00:54,096
+Forty kilo-newtons per meter pushing it down,
+
+12
+00:00:54,096 --> 00:00:56,888
+F E four ten grade steel, the strongest in town.
+
+13
+00:00:56,888 --> 00:00:59,761
+Step one, calculate the moment, W L squared over eight!
+
+14
+00:00:59,761 --> 00:01:02,234
+Forty times twenty-five over eight, do not hesitate!
+
+15
+00:01:02,234 --> 00:01:05,186
+One hundred twenty-five kilo-newton meters is the demand.
+
+16
+00:01:05,186 --> 00:01:07,899
+Now calculate the shear force, or get out of my class, understand?!
+
+17
+00:01:07,899 --> 00:01:10,931
+W L over two! That is exactly one hundred kilo-newtons!
+
+18
+00:01:10,931 --> 00:01:13,324
+Even a first-year student could reach these conclusions!
+
+19
+00:01:13,324 --> 00:01:13,644
+**(Pre-Chorus - The Roast)**
+
+20
+00:01:13,644 --> 00:01:16,277
+Are you writing this down? Or staring into space?
+
+21
+00:01:16,277 --> 00:01:19,548
+Because when the building inspector comes, it is me they chase!
+
+22
+00:01:19,548 --> 00:01:23,936
+Read the boundary conditions, open your eyes!
+
+23
+00:01:23,936 --> 00:01:28,723
+The compression flange is laterally restrained throughout the length!
+
+24
+00:01:28,723 --> 00:01:33,989
+That means no lateral torsional buckling to ruin our strength!
+
+25
+00:01:33,989 --> 00:01:37,340
+The beam is fully supported, it is not twisting away!
+
+26
+00:01:37,340 --> 00:01:39,973
+We bypass the buckling equations and save the day!
+
+27
+00:01:39,973 --> 00:01:42,606
+We are designing for pure yielding, keeping the structure intact,
+
+28
+00:01:42,606 --> 00:01:45,239
+Laterally restrained from end to end, and that is a fact!
+
+29
+00:01:45,239 --> 00:01:48,271
+Now open your I S eight hundred, page eighteen, let us go!
+
+30
+00:01:48,271 --> 00:01:50,824
+We classify the section so the capacity can flow.
+
+31
+00:01:50,824 --> 00:01:53,378
+Flange width outstand, B over thickness T F,
+
+32
+00:01:53,378 --> 00:01:56,090
+Seventy over twelve point four, are you suddenly deaf?!
+
+33
+00:01:56,090 --> 00:01:58,963
+It is five point six four! Less than nine point four epsilon!
+
+34
+00:01:58,963 --> 00:02:01,676
+The flange is class one plastic, come on people, let us move on!
+
+35
+00:02:01,676 --> 00:02:04,149
+Check the web depth D over thickness T W,
+
+36
+00:02:04,149 --> 00:02:06,862
+Thirty-two point nine, well under eighty-four, I am telling you!
+
+37
+00:02:06,862 --> 00:02:09,495
+The whole section is plastic! Beta B equals one!
+
+38
+00:02:09,495 --> 00:02:14,202
+This beam will form a plastic hinge before the failure has begun!
+
+39
+00:02:14,202 --> 00:02:16,676
+Let me slow it down for a second.
+
+40
+00:02:16,676 --> 00:02:19,309
+Breathe.
+
+41
+00:02:19,309 --> 00:02:22,660
+Why do we check the design shear capacity? V D?
+
+42
+00:02:22,660 --> 00:02:25,133
+Because if the web shears... the whole system collapses.
+
+43
+00:02:25,133 --> 00:02:30,399
+Area of the web times the yield stress... divided by root three and gamma M zero.
+
+44
+00:02:30,399 --> 00:02:33,431
+That is two hundred ninety-five kilo-newtons.
+
+45
+00:02:33,431 --> 00:02:35,984
+Our applied shear is only one hundred.
+
+46
+00:02:35,984 --> 00:02:40,851
+We are below sixty percent. We are in a low shear condition.
+
+47
+00:02:40,851 --> 00:02:43,245
+Do you know what that means?
+
+48
+00:02:43,245 --> 00:02:45,718
+It means no reduction!
+
+49
+00:02:45,718 --> 00:02:49,229
+It means we get to use the full bending strength!
+
+50
+00:02:49,229 --> 00:02:51,223
+Brace yourselves!
+
+51
+00:02:51,223 --> 00:02:53,777
+Bring in the plastic modulus, Z P on the track!
+
+52
+00:02:53,777 --> 00:02:56,330
+Six hundred fifty-one point seven times ten cubed, do not hold back!
+
+53
+00:02:56,330 --> 00:02:59,043
+Multiply by two hundred fifty, divide by one point one zero!
+
+54
+00:02:59,043 --> 00:03:01,995
+One hundred forty-eight point one kilo-newton meters, you are the hero!
+
+55
+00:03:01,995 --> 00:03:04,468
+Demand is one twenty-five! Capacity is one forty-eight!
+
+56
+00:03:04,468 --> 00:03:06,622
+The section is adequate! The numbers are great!
+
+57
+00:03:06,622 --> 00:03:09,335
+Check the elastic limit, one point two Z E F Y,
+
+58
+00:03:09,335 --> 00:03:14,202
+One hundred fifty-six, we are perfectly safe, do not cry!
+
+59
+00:03:14,202 --> 00:03:19,388
+I S M B three hundred passes the lateral stability check.
+
+60
+00:03:19,388 --> 00:03:23,218
+It is safe. It is secure.
+
+61
+00:03:23,218 --> 00:03:28,644
+And if you did not understand this... switch your major to business.
+
+62
+00:03:28,644 --> 00:03:33,681
+Class dismissed.
+
