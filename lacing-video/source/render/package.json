@@ -1,0 +1,12 @@
+{
+  "name": "single-lacing-design-video",
+  "private": true,
+  "description": "Frame-by-frame renderer for the single lacing design music video (2 × ISMC 350, IS 800:2007)",
+  "scripts": {
+    "still": "node main.js still",
+    "render": "node main.js render"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^1.0.10"
+  }
+}

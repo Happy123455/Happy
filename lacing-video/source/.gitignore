@@ -1,0 +1,6 @@
+render/node_modules/
+fonts/
+out/
+*.png
+*.npy
+center_voc.wav
