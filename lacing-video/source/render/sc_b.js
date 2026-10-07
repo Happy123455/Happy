@@ -241,8 +241,8 @@ S.push({
         ctx.restore();
       }
       // L21: width + bolts in
-      if (t >= LT(21) - 0.1 && t < LT(22) + 0.3) {
-        const a = env(t, LT(21) - 0.1, LT(22) + 0.3, 0.2, 0.4);
+      if (t >= LT(21) - 0.1 && t < LT(22) + 0.02) {
+        const a = env(t, LT(21) - 0.1, LT(22) + 0.02, 0.2, 0.28);
         ctx.save(); ctx.globalAlpha *= a;
         K.dim3(ctx, cam, [-HOLE - 70, -25, 14], [-HOLE - 70, 25, 14], 'b = 50', P(t, LT(21), 0.6), { size: 34, glow: true, flat: true, off: -46 });
         mathText(ctx, 'b ≥ 3d = 3 × 16 = 48 mm', W * 0.27, H * 0.18, { size: 44, fam: 'cond', weight: '600', color: '#fff', align: 'center', alpha: P(t, LT(21) + 0.2, 0.3) });
@@ -251,10 +251,10 @@ S.push({
         for (const x of [-HOLE, HOLE]) { const p = Wd.project(cam, [x, 0, 16]); if (p) sparks(ctx, p[0], p[1], t, LT(21) + 1.0 + (x > 0 ? 0.25 : 0), { n: 50, vmin: 300, vmax: 1200, life: 0.9, seed: x > 0 ? 5 : 9 }); }
       }
       // L22: radius of gyration & slenderness
-      if (t >= LT(22) - 0.1 && t < LT(23) + 0.3) {
-        const a = env(t, LT(22) - 0.1, LT(23) + 0.3, 0.2, 0.4);
+      if (t >= LT(22) - 0.1 && t < LT(23) + 0.02) {
+        const a = env(t, LT(22) - 0.1, LT(23) + 0.02, 0.2, 0.28);
         ctx.save(); ctx.globalAlpha *= a;
-        mathText(ctx, 'r = t / √12 = 14 / √12 = 4.04 mm', W * 0.5, H * 0.16, { size: 46, fam: 'cond', weight: '600', color: '#fff', align: 'center', alpha: P(t, LT(22), 0.3) });
+        mathText(ctx, 'r = t / √12 = 14 / √12 = 4.04 mm', W * 0.5, H * 0.16, { size: 46, fam: 'cond', weight: '600', color: '#fff', align: 'center', alpha: P(t, LT(22) + 0.04, 0.3) });
         K.bigNum(ctx, 'λ = 119', W * 0.5, H * 0.32, t, LT(22) + 0.6, { size: 130 });
         K.gauge(ctx, 620, 790, 680, 119, 145, 160, t, LT(22) + 1.0, { label: 'SLENDERNESS  λ = l / r', limLabel: 'MAX 145', valLabel: (v) => v.toFixed(0) });
         ctx.restore();

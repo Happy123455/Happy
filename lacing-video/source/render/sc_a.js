@@ -221,8 +221,8 @@ S.push({
       ctx.restore();
     }
     // ---- L11 slenderness check title
-    if (t >= LT(11) - 0.05 && t < LT(12) + 0.3) {
-      const a = env(t, LT(11) - 0.05, LT(12) + 0.3, 0.1, 0.4);
+    if (t >= LT(11) - 0.05 && t < LT(12) + 0.02) {
+      const a = env(t, LT(11) - 0.05, LT(12) + 0.02, 0.1, 0.28);
       ctx.save(); ctx.globalAlpha *= a;
       K.title(ctx, 'SLENDERNESS  CHECK', W * 0.62, H * 0.26, t, LT(11), { size: 110, ls0: 70, ls: 8, lsT: 1.4 });
       K.title(ctx, 'સ્લેન્ડરનેસ ચેક', W * 0.62, H * 0.26 + 100, t, LT(11) + 0.4, { size: 64, fam: 'gu', weight: '600', ls0: 20, ls: 2, glow: null, color: COL.amber });
@@ -233,7 +233,7 @@ S.push({
     if (t >= LT(12) - 0.05) {
       const a = 1 - P(t, V1 - 0.35, 0.35);
       ctx.save(); ctx.globalAlpha *= a;
-      mathText(ctx, 'a / r_{y}  =  680 / 28.3', W * 0.62, H * 0.27, { size: 64, fam: 'cond', weight: '600', color: '#fff', align: 'center', alpha: P(t, LT(12), 0.3) });
+      mathText(ctx, 'a / r_{y}  =  680 / 28.3', W * 0.62, H * 0.27, { size: 64, fam: 'cond', weight: '600', color: '#fff', align: 'center', alpha: P(t, LT(12) + 0.04, 0.3) });
       K.bigNum(ctx, '24.03', W * 0.62, H * 0.47, t, LT(12) + 1.2, { size: 240, decode: 0.9 });
       ctx.restore();
     }

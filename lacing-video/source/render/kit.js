@@ -124,7 +124,7 @@ function card(ctx, x, y, w, rows, t, o = {}) {
 
 // ------------------------------------------------------------------ lyric rail (Gujarati line + English translation, karaoke sweep)
 function curLine(t) {
-  for (let i = LINES.length - 1; i >= 0; i--) if (t >= LINES[i].t - 0.15) return t < LINES[i].end + 0.35 ? i : -1;
+  for (let i = LINES.length - 1; i >= 0; i--) if (t >= LINES[i].t - 0.18) return t < LINES[i].end + 0.35 ? i : -1;
   return -1;
 }
 function lyricRail(ctx, t, o = {}) {
@@ -147,22 +147,23 @@ function lyricRail(ctx, t, o = {}) {
     ctx.restore();
   };
   // outgoing line: if the previous line was still up when this one arrived, roll it up and away
-  let outA = 0, outK = 1;
+  // (staggered: the old line is mostly gone before the new one rises in, so the two never overlap)
+  let outA = 0, outK = 1, rolled = false;
   if (i >= 1) {
-    const Pv = LINES[i - 1], t0 = LINES[i].t - 0.15;
+    const Pv = LINES[i - 1], t0 = LINES[i].t - 0.18;
     const at0 = 1 - clamp((t0 - Pv.end - 0.05) / 0.25);
-    if (at0 > 0) { outK = clamp((t - t0) / 0.32); outA = at0 * (1 - outK) * (1 - outK); }
+    if (at0 > 0) { rolled = true; outK = clamp((t - t0) / 0.26); outA = at0 * (1 - outK) * (1 - outK); }
   }
   let inA = 0, inK = 1, sweep = 0;
   if (i >= 0) {
-    const L = LINES[i]; inK = clamp((t - L.t + 0.15) / 0.4);
+    const L = LINES[i]; inK = rolled ? clamp((t - L.t + 0.06) / 0.34) : clamp((t - L.t + 0.15) / 0.4);
     inA = E.outC(inK) * (1 - clamp((t - L.end - 0.05) / 0.25));
     sweep = clamp((t - L.t) / (Math.min(L.end - L.t, X.PER * 8) * 0.88));
   }
   const bA = bandA * Math.max(inA, outA);
   if (bA > 0.003) { const g = ctx.createLinearGradient(0, y - 110, 0, H); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.45, `rgba(0,0,0,${bA})`); g.addColorStop(1, `rgba(0,0,0,${bA})`); ctx.fillStyle = g; ctx.fillRect(0, y - 110, W, H - (y - 110)); }
   if (outA > 0) draw(i - 1, outA, -64 * E.outC(outK), 1);
-  if (i >= 0) draw(i, inA, (1 - E.outC(inK)) * 30, sweep);
+  if (i >= 0) draw(i, inA, (1 - E.outC(inK)) * 26, sweep);
 }
 // soft elliptical dark scrim behind hero text; also eats the glow layer so bloom does not bleed through
 function scrim(ctx, g, cx, cy, rx, ry, a = 0.6) {

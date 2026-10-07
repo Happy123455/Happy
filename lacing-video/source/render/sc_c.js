@@ -78,7 +78,7 @@ S.push({
       faces.push(...Wd.bar([-160, 0, 0], [160, 0, 0], 50, 14, [0, 0, 1], 'flat', { base: [160, 166, 176] }));
       faces.push(...Wd.bar([-160, 0, -13.5], [160, 0, -13.5], 110, 13.5, [0, 0, 1], 'flange', { base: [96, 102, 112] }));
       faces.push(...Wd.boltFull([0, 0, 14 + (1 - fly) * 520], [0, 0, 1], spin, { grip: 27.5, nutPos: 27.5 + (1 - P(t, LT(29) + 1.0, 1.0, E.outC)) * 80 }));
-      const shearOn = env(t, LT(30) + 0.3, LT(31) + 0.4, 0.3, 0.3);
+      const shearOn = env(t, LT(30) + 0.3, LT(31) + 0.02, 0.3, 0.28);
       K.drawCol(ctx, g, cam, {}, { faces, spot: null, fogStart: 2600, edge: 'rgba(255,214,170,0.5)', glowStyle: (f) => (f.part === 'bhead' || f.part === 'washer' ? { flat: '#000', edge: 'rgba(255,170,90,0.8)', ew: 2 } : f.part === 'shank' && shearOn > 0 ? { flat: '#000', edge: `rgba(79,209,255,${0.8 * shearOn})`, ew: 2 } : { flat: '#000' }) });
       holes(ctx, cam, 14.3, [0], 9.2);
       embers(ctx, t, { n: 60, alpha: 0.6 });
@@ -99,8 +99,8 @@ S.push({
         ctx.restore();
       }
       // L31 bearing on the flange hole
-      if (t >= LT(31) - 0.1 && t < LT(32) + 0.3) {
-        const a = env(t, LT(31) - 0.1, LT(32) + 0.3, 0.2, 0.4);
+      if (t >= LT(31) && t < LT(32) + 0.02) {
+        const a = env(t, LT(31), LT(32) + 0.02, 0.25, 0.28);
         const arcPts = []; for (let i = 0; i <= 16; i++) { const th = -Math.PI / 2 + (i / 16) * Math.PI; const p = Wd.project(cam, [Math.cos(th) * 10, Math.sin(th) * 10, -6]); if (p) arcPts.push([p[0], p[1]]); }
         ctx.save(); ctx.globalAlpha *= a; if (arcPts.length > 2) line(ctx, arcPts, { color: COL.orange, lw: 8, glow: 'rgba(255,122,26,0.9)', glowR: 24 }); ctx.restore();
         ctx.save(); ctx.globalAlpha *= a;
@@ -111,8 +111,8 @@ S.push({
         ctx.restore();
       }
       // L32 0.92 -> 1 bolt
-      if (t >= LT(32) - 0.1 && t < LT(33) + 0.5) {
-        const a = env(t, LT(32) - 0.1, LT(33) + 0.5, 0.2, 0.4);
+      if (t >= LT(32) && t < LT(33) + 0.5) {
+        const a = env(t, LT(32), LT(33) + 0.5, 0.25, 0.4);
         ctx.save(); ctx.globalAlpha *= a;
         mathText(ctx, 'BOLT VALUE = min(28.98, 86.8) = 28.98 kN', W * 0.72, H * 0.16, { size: 40, fam: 'cond', weight: '600', color: '#fff', align: 'center' });
         mathText(ctx, 'n = 26.52 / 28.98', W * 0.72, H * 0.27, { size: 56, fam: 'cond', weight: '600', color: 'rgba(220,240,255,0.9)', align: 'center', alpha: P(t, LT(32) + 0.4, 0.3) });
